@@ -301,10 +301,23 @@ com a série histórica da taxa.
 
 
 
+Glossário das variáveis e das bases: 
+
+A base de dados utilizada foi a PNAD-C, através de seus microdados da visita 1 – com exceção dos anos 2020 e 
+2021, que o módulo para o cálculo da taxa de desemprego foi concentrado na visita 5. 
+Link direto para acessar a PNAD-C:
+https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Micro
+dados/Visita/
+
+Anos 2012-2019; 2022-2024: visita 1. 
+Anos 2020 e 2021: visita 5. 
+
+A variável de interesse é a VD4002. Pelo próprio dicionário da PNAD-C, condiz à “Condição de ocupação na 
+semana de referência para pessoas de 14 anos ou mais de idade”; onde “1” significa que a pessoa está ocupada, 
+e “0”, desocupada. 
 
 
-
-
-
-
-
+A tabela auxiliar, chamada de “tabela_aux_codigo_nome”, é apenas a relação do código do recorte geográfico com
+seu respectivo nome, visando a criação das legendas para os gráficos. É nesse momento em que ocorre o Join. 
+Essa tabela foi criada por mim mesmo, mas baseada nos códigos das UFs, regiões, e Brasil, oficialmente 
+adotados pelo IBGE. 
