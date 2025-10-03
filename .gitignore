@@ -1,8 +1,11 @@
-.parquet
-.csv
-.txt
-.xls
-.xlsx
+*.parquet
+*.csv
+*.txt
+*.xls
+*.xlsx
+*.Rdata
+*.Rproj
+*.Rhistory
 
 
 
