@@ -249,6 +249,12 @@ ggplot(dfreg, aes(x = ano, y = tx_desocup, color = nome_UF, group = nome_UF)) +
     legend.position = "bottom"  
   )
 
+
+# É possível ver que o Nordeste concentra, historicamente, sempre a maior taxa de desocupação;
+# enquanto o Sul, a região com menor taxa de desocupação. 
+# Como possível melhoria para o trabalho, poderia-se fazer uma análise com indicadores socioeconômicos, tais 
+# como o PIB per capita, a produtividade do trabalho etc, avaliando melhor as divergências desses recortes.
+
 #o segundo gráfico será para as UFs da Região sudeste (e a região), para o ano de 2024.. 
 
 dfsudeste <- df %>% 
@@ -256,6 +262,23 @@ dfsudeste <- df %>%
          ano == 2024)
 
 
+ggplot(dfsudeste, aes(x = nome_UF, y = tx_desocup, fill = nome_UF)) +
+  geom_col(width = 0.6) +
+  labs(
+    title = "Taxa de desocupação - Sudeste e seus estados (2024)",
+    x = "",
+    y = "Taxa (%)",
+    fill = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), 
+    legend.position = "none"
+  )
+
+#Embora tenha optado por avaliar somente o ano de 2024, o gráfico mostra que Rio de Janeiro está bem acima 
+# dos demais. Isso pode representar uma dificuldade na recuperação da crise do Covid-2019, ou estar em linha 
+# com a série histórica da taxa.
 
 
 
