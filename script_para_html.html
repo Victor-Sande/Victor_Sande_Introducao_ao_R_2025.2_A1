@@ -11,7 +11,7 @@
 
 
 
-<title>Relatório PNADc</title>
+<title>Victor Sande - A1 R</title>
 
 <script src="script_para_html_files/header-attrs-2.29/header-attrs.js"></script>
 <script src="script_para_html_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -162,12 +162,13 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">Relatório PNADc</h1>
+<h1 class="title toc-ignore">Victor Sande - A1 R</h1>
 
 </div>
 
 
-<p>Bibliotecas utilizadas:</p>
+<div id="bibliotecas-utilizadas" class="section level2">
+<h2>Bibliotecas utilizadas:</h2>
 <pre class="r"><code>library(arrow)</code></pre>
 <pre><code>## Warning: pacote &#39;arrow&#39; foi compilado no R versão 4.4.3</code></pre>
 <pre><code>## 
@@ -193,7 +194,9 @@ library(purrr)
 library(ggplot2)
 library(here)</code></pre>
 <pre><code>## here() starts at C:/Users/Victor/Documents/GitHub/Victor_Sande_Introducao_ao_R_2025.2_A1</code></pre>
-<p>Função de Tratamento das PNADs</p>
+</div>
+<div id="função-de-tratamento-das-pnads" class="section level2">
+<h2>Função de Tratamento das PNADs</h2>
 <pre class="r"><code>treat_pnad &lt;- function(path, input_path,
                        dictionary_path, output_path, tipo_pnad, db) {
   
@@ -240,6 +243,9 @@ library(here)</code></pre>
 <p>Nota: como as PNADs são muito grandes, não consegui rodar todas de
 uma vez. é preciso alterar os argumentos da função para cada edição da
 PNAD, de acordo com o seu caminho.</p>
+</div>
+<div id="cálculo-da-taxa-de-desocupação" class="section level2">
+<h2>Cálculo da taxa de desocupação</h2>
 <p>Agora, é possível calcular a taxa de desocupação. Antes, precisa
 importar os arquivos lidos:</p>
 <pre class="r"><code>dir_parq  &lt;- here(&quot;pnadc&quot;,&quot;dados&quot;,&quot;output&quot;,&quot;pnadc_vis1_trat&quot;)
@@ -385,8 +391,11 @@ pnadc_total_rename &lt;- pnadc_total_join %&gt;%
   fileEncoding = &quot;UTF-8&quot;,
   row.names = FALSE
 )</code></pre>
-<p>Fazendo os gráficos: Antes, recomendaria limpar o diretório e
-importar o arquivo gerado para não sobrecarregar a memória.</p>
+</div>
+<div id="gráficos" class="section level2">
+<h2>Gráficos</h2>
+<p>Antes, recomendaria limpar o diretório e importar o arquivo gerado
+para não sobrecarregar a memória.</p>
 <pre class="r"><code>df &lt;- read.csv(
   here(&quot;pnadc&quot;, &quot;dados&quot;, &quot;output&quot;, &quot;perc_pnadc_desocupacao.csv&quot;)
 )</code></pre>
@@ -451,7 +460,9 @@ ggplot(dfsudeste, aes(x = nome_UF, y = tx_desocup, fill = nome_UF)) +
 mostra que Rio de Janeiro está bem acima dos demais. Isso pode
 representar uma dificuldade na recuperação da crise do Covid-2019, ou
 estar em linha com a série histórica da taxa.</p>
-<p>Glossário das variáveis e das bases:</p>
+</div>
+<div id="glossário-das-variáveis-e-das-bases" class="section level2">
+<h2>Glossário das variáveis e das bases</h2>
 <p>A base de dados utilizada foi a PNAD-C, através de seus microdados da
 visita 1 – com exceção dos anos 2020 e 2021, que o módulo para o cálculo
 da taxa de desemprego foi concentrado na visita 5. Link direto para
@@ -469,6 +480,7 @@ relação do código do recorte geográfico com seu respectivo nome, visando
 a criação das legendas para os gráficos. É nesse momento em que ocorre o
 Join. Essa tabela foi criada por mim mesmo, mas baseada nos códigos das
 UFs, regiões, e Brasil, oficialmente adotados pelo IBGE.</p>
+</div>
 
 
 

@@ -1,5 +1,5 @@
 ---
-title: "Relatório PNADc"
+title: "Victor Sande - A1 R"
 output:
   html_document:
     self_contained: false   
@@ -9,7 +9,7 @@ knitr:
     root.dir: !expr here::here()
 ---
 
-Bibliotecas utilizadas: 
+## Bibliotecas utilizadas: 
 ```{r}
 library(arrow)
 library(readxl)
@@ -20,7 +20,7 @@ library(ggplot2)
 library(here)
 ```
 
-Função de Tratamento das PNADs
+## Função de Tratamento das PNADs
 ```{r}
 treat_pnad <- function(path, input_path,
                        dictionary_path, output_path, tipo_pnad, db) {
@@ -72,6 +72,7 @@ Tratando as PNADs
 Nota: como as PNADs são muito grandes, não consegui rodar todas de uma vez. é preciso alterar
       os argumentos da função para cada edição da PNAD, de acordo com o seu caminho.
 
+## Cálculo da taxa de desocupação 
 
 Agora, é possível calcular a taxa de desocupação. Antes, precisa importar os arquivos lidos:
 ```{r, error=TRUE, results='hide'}
@@ -234,7 +235,8 @@ write.csv(
 )
 ```
 
-Fazendo os gráficos: 
+## Gráficos
+
 Antes, recomendaria limpar o diretório e importar o arquivo gerado para não sobrecarregar a memória. 
 ```{r}
 df <- read.csv(
@@ -297,11 +299,7 @@ Embora tenha optado por avaliar somente o ano de 2024, o gráfico mostra que Rio
 dos demais. Isso pode representar uma dificuldade na recuperação da crise do Covid-2019, ou estar em linha 
 com a série histórica da taxa.
 
-
-
-
-
-Glossário das variáveis e das bases: 
+## Glossário das variáveis e das bases
 
 A base de dados utilizada foi a PNAD-C, através de seus microdados da visita 1 – com exceção dos anos 2020 e 
 2021, que o módulo para o cálculo da taxa de desemprego foi concentrado na visita 5. 
