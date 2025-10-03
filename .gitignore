@@ -1,11 +1,17 @@
+.Rproj.user/
+*.Rproj
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+.RDataTmp
+
 *.parquet
 *.csv
 *.txt
 *.xls
 *.xlsx
-*.Rdata
-*.Rproj
-*.Rhistory
+
 
 
 
