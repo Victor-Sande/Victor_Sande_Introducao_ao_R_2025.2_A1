@@ -167,8 +167,6 @@ pre code {
 </div>
 
 
-<div id="bibliotecas-utilizadas" class="section level2">
-<h2>Bibliotecas utilizadas:</h2>
 <pre class="r"><code>library(arrow)</code></pre>
 <pre><code>## Warning: pacote &#39;arrow&#39; foi compilado no R versão 4.4.3</code></pre>
 <pre><code>## 
@@ -194,7 +192,6 @@ library(purrr)
 library(ggplot2)
 library(here)</code></pre>
 <pre><code>## here() starts at C:/Users/Victor/Documents/GitHub/Victor_Sande_Introducao_ao_R_2025.2_A1</code></pre>
-</div>
 <div id="função-de-tratamento-das-pnads" class="section level2">
 <h2>Função de Tratamento das PNADs</h2>
 <pre class="r"><code>treat_pnad &lt;- function(path, input_path,
@@ -480,6 +477,32 @@ relação do código do recorte geográfico com seu respectivo nome, visando
 a criação das legendas para os gráficos. É nesse momento em que ocorre o
 Join. Essa tabela foi criada por mim mesmo, mas baseada nos códigos das
 UFs, regiões, e Brasil, oficialmente adotados pelo IBGE.</p>
+</div>
+<div id="como-reproduzir" class="section level1">
+<h1>Como reproduzir</h1>
+<div id="bibliotecas-utilizadas" class="section level2">
+<h2>Bibliotecas utilizadas:</h2>
+<pre class="r"><code>library(arrow)
+library(readxl)
+library(tidyverse)
+library(readr)
+library(purrr)
+library(ggplot2)
+library(here)</code></pre>
+<p>É possível fazer o knit apenas apertand o botão do Rmd.</p>
+</div>
+<div id="divulgação-de-ia" class="section level2">
+<h2>Divulgação de IA:</h2>
+<p>usei o prompt: tenho um dataframe no R. quero criar gráficos a partir
+dele usando o ggplot2. uma das colunas se chama “codigo_UF” (1-5,
+regiões), outra que se chama “nome_UF, a coluna de valores se
+chama”tx_desocup”, e a de anos, “ano”. quero um gráfico que faz a série
+histórica da taxa para essas regiões.</p>
+<p>no chatgpt.</p>
+<p>A parte inicial (lendo e tratando a PNAD) foi feita pelo meu chefe no
+estágio, que me deu o código para um trabalho que iríamos fazer
+utilizando dados da PNAD. O restante, fui eu.</p>
+</div>
 </div>
 
 

@@ -8,8 +8,6 @@ knitr:
   opts_knit:
     root.dir: !expr here::here()
 ---
-
-## Bibliotecas utilizadas: 
 ```{r}
 library(arrow)
 library(readxl)
@@ -319,3 +317,41 @@ A tabela auxiliar, chamada de “tabela_aux_codigo_nome”, é apenas a relaçã
 seu respectivo nome, visando a criação das legendas para os gráficos. É nesse momento em que ocorre o Join. 
 Essa tabela foi criada por mim mesmo, mas baseada nos códigos das UFs, regiões, e Brasil, oficialmente 
 adotados pelo IBGE. 
+
+
+# Como reproduzir 
+
+## Bibliotecas utilizadas: 
+```{r}
+library(arrow)
+library(readxl)
+library(tidyverse)
+library(readr)
+library(purrr)
+library(ggplot2)
+library(here)
+```
+
+É possível fazer o knit apenas apertand o botão do Rmd. 
+
+## Divulgação de IA:
+
+usei o prompt: 
+tenho um dataframe no R. quero criar gráficos a partir dele usando o ggplot2. uma das colunas se chama "codigo_UF" (1-5, regiões), outra que se chama "nome_UF, a coluna de valores se chama "tx_desocup", e a de anos, "ano". quero um gráfico que faz a série histórica da taxa para essas regiões.
+
+
+no chatgpt. 
+
+A parte inicial (lendo e tratando a PNAD) foi feita pelo meu chefe no estágio, que me deu o código para um trabalho que iríamos fazer utilizando dados da PNAD. O restante, fui eu. 
+
+
+
+
+
+
+
+
+
+
+
+
