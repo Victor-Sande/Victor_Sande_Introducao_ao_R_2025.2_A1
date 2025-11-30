@@ -1,0 +1,476 @@
+---
+title: "Dashboard – Pobreza e Informalidade"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(flexdashboard)
+library(shiny)
+library(readxl)
+library(geobr)
+library(sf)
+library(leaflet)
+
+aux <- read_xlsx("tabela_aux_ibge.xlsx") %>%
+  select(-sigla) %>%
+  filter(!nome %in% c("Norte", "Nordeste", "Sul", "Sudeste", "Centro-Oeste")) %>%
+  rename(codigo = codigo_ibge)
+
+pob <- read.csv("output/tx_pnadc_pobreza.csv") %>%
+  rename(codigo = UF) %>%
+  mutate(
+    perc_geral  = perc_geral  * 100,
+    perc_branco = perc_branco * 100,
+    perc_negro  = perc_negro  * 100
+  ) %>%
+  left_join(aux, by = "codigo") %>%
+  mutate(
+    ano         = as.numeric(ano),
+    perc_geral  = as.numeric(perc_geral),
+    perc_branco = as.numeric(perc_branco),
+    perc_negro  = as.numeric(perc_negro)
+  )
+
+inf <- read.csv("output/tx_pnadc_informalidade.csv") %>%
+  rename(
+    codigo      = UF,
+    ano         = ANO,
+    perc_geral  = informal_tx,
+    perc_branco = informal_tx_branco,
+    perc_negro  = informal_tx_negro
+  ) %>%
+  left_join(aux, by = "codigo") %>%
+  mutate(
+    ano         = as.numeric(ano),
+    perc_geral  = as.numeric(perc_geral),
+    perc_branco = as.numeric(perc_branco),
+    perc_negro  = as.numeric(perc_negro)
+  )
+
+estados_br <- geobr::read_state(year = 2020, showProgress = FALSE) %>%
+  mutate(codigo = as.numeric(substr(code_state, 1, 2))) %>%
+  filter(codigo >= 10, codigo < 100)
+
+recorte_labels <- c(
+  perc_geral  = "Geral",
+  perc_branco = "Brancos",
+  perc_negro  = "Negros"
+)
+```
+
+Séries temporais 
+=====================================
+
+Sidebar {.sidebar}
+-------------------------------------
+
+```{r}
+selectInput(
+  "recorte",
+  "Recorte:",
+  c("Geral" = "perc_geral",
+    "Brancos" = "perc_branco",
+    "Negros" = "perc_negro"),
+  selected = "perc_geral"
+)
+
+selectInput(
+  "nome",
+  "Nome:",
+  choices = sort(unique(pob$nome)),
+  selected = sort(unique(pob$nome))[1]
+)
+```
+
+Column {data-width=50%}
+--------------------------------------
+
+### Pobreza
+
+```{r}
+renderPlot({
+  req(input$recorte, input$nome)
+
+  rec <- input$recorte
+
+  df_plot <- pob %>%
+    filter(nome == input$nome) %>%
+    mutate(valor = .data[[rec]])
+
+  y_min <- min(df_plot$valor, na.rm = TRUE)
+  y_lim_inf <- y_min - 0.15 * y_min
+
+  ggplot(df_plot, aes(ano, valor)) +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 2) +
+    scale_y_continuous(
+      labels = scales::percent_format(scale = 1),
+      limits = c(y_lim_inf, NA)
+    ) +
+    labs(
+      title = paste("Pobreza –", recorte_labels[rec]),
+      x = "Ano",
+      y = "Percentual"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+})
+```
+
+Column {data-width=50%}
+------------------------------------
+
+### Informalidade
+
+```{r}
+renderPlot({
+  req(input$recorte, input$nome)
+
+  rec <- input$recorte
+
+  df_plot <- inf %>%
+    filter(nome == input$nome) %>%
+    mutate(valor = .data[[rec]])
+
+  y_min <- min(df_plot$valor, na.rm = TRUE)
+  y_lim_inf <- y_min - 0.15 * y_min
+
+  ggplot(df_plot, aes(ano, valor)) +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 2) +
+    scale_y_continuous(
+      labels = scales::percent_format(scale = 1),
+      limits = c(y_lim_inf, NA)
+    ) +
+    labs(
+      title = paste("Informalidade –", recorte_labels[rec]),
+      x = "Ano",
+      y = "Percentual"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+})
+```
+
+Cenário atual 
+=====================================
+
+Sidebar {.sidebar}
+-------------------------------------
+
+```{r}
+selectInput(
+  "recorte_mapa",
+  "Recorte:",
+  c(
+    "Geral"   = "perc_geral",
+    "Brancos" = "perc_branco",
+    "Negros"  = "perc_negro"
+  ),
+  selected = "perc_geral"
+)
+```
+
+Column {data-width=50%}
+-------------------------------------
+
+### Pobreza – 2024
+
+```{r}
+renderPlot({
+
+  req(input$recorte_mapa)
+  rec <- input$recorte_mapa
+
+  df_plot <- pob %>%
+    filter(
+      codigo >= 11,
+      codigo <= 53,
+      ano == 2024
+    ) %>%
+    mutate(valor = .data[[rec]]) %>%
+    arrange(desc(valor))
+
+  ggplot(df_plot, aes(x = reorder(nome, valor), y = valor)) +
+    geom_col(fill = "#2C6DA3") +
+    coord_flip() +
+    scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+    labs(
+      title = paste("Pobreza –", recorte_labels[rec], "(2024)"),
+      x = "",
+      y = "Percentual"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold")
+    )
+})
+```
+
+Column {data-width=50%}
+-------------------------------------
+
+### Informalidade – 2024
+
+```{r}
+renderPlot({
+
+  req(input$recorte_mapa)
+  rec <- input$recorte_mapa
+
+  df_plot <- inf %>%
+    filter(
+      codigo >= 11,
+      codigo <= 53,
+      ano == 2024
+    ) %>%
+    mutate(valor = .data[[rec]]) %>%
+    arrange(desc(valor))
+
+  ggplot(df_plot, aes(x = reorder(nome, valor), y = valor)) +
+    geom_col(fill = "#A32C2C") +
+    coord_flip() +
+    scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+    labs(
+      title = paste("Informalidade –", recorte_labels[rec], "(2024)"),
+      x = "",
+      y = "Percentual"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold")
+    )
+})
+```
+
+Mapas
+=====================================
+
+Sidebar {.sidebar}
+-------------------------------------
+
+```{r}
+selectInput(
+  "recorte_mapa",
+  "Recorte:",
+  c(
+    "Geral"   = "perc_geral",
+    "Brancos" = "perc_branco",
+    "Negros"  = "perc_negro"
+  ),
+  selected = "perc_geral"
+)
+```
+
+Column {data-width=50%}
+-------------------------------
+
+### Mapa de Pobreza
+
+```{r}
+renderLeaflet({
+  req(input$recorte_mapa)
+
+  rec <- input$recorte_mapa
+
+  pob_uf <- pob %>%
+    group_by(codigo, nome) %>%
+    filter(ano == max(ano, na.rm = TRUE)) %>%
+    ungroup() %>%
+    mutate(valor = .data[[rec]])
+
+  shp <- estados_br %>%
+    inner_join(pob_uf, by = "codigo")
+
+  pal <- colorNumeric(
+    palette = "Blues",
+    domain  = shp$valor,
+    na.color = "#f0f0f0"
+  )
+
+  leaflet(shp) %>%
+    addTiles() %>%
+    addPolygons(
+      fillColor   = ~pal(valor),
+      weight      = 1,
+      color       = "white",
+      fillOpacity = 0.8,
+      label = ~paste0(
+        nome, "<br>",
+        "Pobreza – ", recorte_labels[rec], ": ",
+        sprintf("%.1f%%", valor)
+      ),
+      highlightOptions = highlightOptions(
+        weight = 2,
+        color  = "#666",
+        bringToFront = TRUE
+      )
+    ) %>%
+    addLegend(
+      "bottomright",
+      pal    = pal,
+      values = ~valor,
+      title  = paste("Pobreza –", recorte_labels[rec]),
+      labFormat = labelFormat(suffix = "%")
+    )
+})
+```
+
+Column {data-width=50%}
+--------------------------------
+
+### Mapa de Informalidade 
+
+```{r}
+renderLeaflet({
+  req(input$recorte_mapa)
+
+  rec <- input$recorte_mapa
+
+  inf_uf <- inf %>%
+    group_by(codigo, nome) %>%
+    filter(ano == max(ano, na.rm = TRUE)) %>%
+    ungroup() %>%
+    mutate(valor = .data[[rec]])
+
+  shp <- estados_br %>%
+    inner_join(inf_uf, by = "codigo")
+
+  pal <- colorNumeric(
+    palette = "Blues",
+    domain  = shp$valor,
+    na.color = "#f0f0f0"
+  )
+
+  leaflet(shp) %>%
+    addTiles() %>%
+    addPolygons(
+      fillColor   = ~pal(valor),
+      weight      = 1,
+      color       = "white",
+      fillOpacity = 0.8,
+      label = ~paste0(
+        nome, "<br>",
+        "Informalidade – ", recorte_labels[rec], ": ",
+        sprintf("%.1f%%", valor)
+      ),
+      highlightOptions = highlightOptions(
+        weight = 2,
+        color  = "#666",
+        bringToFront = TRUE
+      )
+    ) %>%
+    addLegend(
+      "bottomright",
+      pal    = pal,
+      values = ~valor,
+      title  = paste("Informalidade –", recorte_labels[rec]),
+      labFormat = labelFormat(suffix = "%")
+    )
+})
+```
+
+Tabela dinâmica
+=====================================
+
+Sidebar {.sidebar}
+-------------------------------------
+
+```{r}
+selectInput(
+  "ano_tabela",
+  "Ano:",
+  choices = sort(unique(pob$ano)),
+  selected = max(pob$ano)
+)
+```
+
+Column {data-width=100%}
+-------------------------------------
+
+### Tabela dinâmica – Pobreza e Informalidade por UF
+
+```{r}
+renderTable({
+
+  req(input$ano_tabela)
+  ano_sel <- input$ano_tabela
+
+  # ---- Base pobreza ----
+  tab_pob <- pob %>%
+    filter(
+      codigo >= 11,
+      codigo <= 53,
+      ano == ano_sel
+    ) %>%
+    select(nome, perc_geral, perc_branco, perc_negro) %>%
+    rename(
+      pobreza_geral  = perc_geral,
+      pobreza_branco = perc_branco,
+      pobreza_negro  = perc_negro
+    )
+
+  # ---- Base informalidade ----
+  tab_inf <- inf %>%
+    filter(
+      codigo >= 11,
+      codigo <= 53,
+      ano == ano_sel
+    ) %>%
+    select(nome, perc_geral, perc_branco, perc_negro) %>%
+    rename(
+      informal_geral  = perc_geral,
+      informal_branco = perc_branco,
+      informal_negro  = perc_negro
+    )
+
+  # ---- Junta ----
+  tab_final <- tab_pob %>%
+    left_join(tab_inf, by = "nome") %>%
+    arrange(nome)
+
+  # ---- Formata percentuais ----
+  tab_final %>%
+    mutate(
+      across(
+        -nome,
+        ~ sprintf("%.1f%%", .x)
+      )
+    )
+})
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
